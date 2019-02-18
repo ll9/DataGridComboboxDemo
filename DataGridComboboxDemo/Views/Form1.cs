@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -13,31 +14,39 @@ namespace DataGridComboboxDemo
 {
     public partial class Form1 : Form
     {
+        private DataTable table;
+
         public Form1()
         {
             InitializeComponent();
 
-            var people = new List<Person>
-            {
-                new Person("Hans", 33),
-                new Person("Peter", 27)
-            };
-            dataGridView1.DataSource = people;
 
-            foreach (DataGridViewColumn column in dataGridView1.Columns)
+            var query = "SELECT * FROM PERSON";
+            table = new DataTable();
+            using (var connection = new SQLiteConnection("Data Source=db.sqlite"))
+            using (var adapter = new SQLiteDataAdapter(query, connection))
             {
-                Console.WriteLine(column.Name);
-                Console.WriteLine(column.DataPropertyName);
-                Console.WriteLine(column.HeaderText);
+                adapter.Fill(table);
             }
 
-            var comboBoxColumn = new DataGridViewComboBoxColumn();
-            comboBoxColumn.DataSource = people;
-            comboBoxColumn.DisplayMember = nameof(Person.Name);
-            comboBoxColumn.ValueMember = nameof(Person.Name);
-            comboBoxColumn.DataPropertyName = nameof(Person.Name);
+            dataGridView1.DataSource = table;
+        }
 
-            dataGridView1.Columns.Add(comboBoxColumn);
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var query = "SELECT * FROM PERSON";
+
+            using (var connection = new SQLiteConnection("Data Source=db.sqlite"))
+            using (var adapter = new SQLiteDataAdapter(query, connection))
+            {
+                var builder = new SQLiteCommandBuilder(adapter);
+
+                adapter.InsertCommand = builder.GetInsertCommand();
+                adapter.UpdateCommand = builder.GetUpdateCommand();
+                adapter.DeleteCommand = builder.GetDeleteCommand();
+                adapter.Update(table);
+            }
+
         }
     }
 }
