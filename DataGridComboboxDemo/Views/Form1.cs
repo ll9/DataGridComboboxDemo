@@ -30,6 +30,14 @@ namespace DataGridComboboxDemo
             }
 
             dataGridView1.DataSource = table;
+            dataGridView1.Columns.Remove("Name");
+
+            var comboboxColum = new DataGridViewComboBoxColumn();
+            comboboxColum.Items.AddRange("Hans", "Peter");
+            comboboxColum.DataPropertyName = "Name";
+            comboboxColum.HeaderText = "Name";
+
+            dataGridView1.Columns.Add(comboboxColum);
         }
 
         private void button1_Click(object sender, EventArgs e)
