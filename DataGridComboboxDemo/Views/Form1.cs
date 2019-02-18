@@ -23,6 +23,7 @@ namespace DataGridComboboxDemo
 
             var query = "SELECT * FROM PERSON";
             table = new DataTable();
+            table.ColumnChanging += new DataColumnChangeEventHandler(dataTable_ColumnChanging);
             using (var connection = new SQLiteConnection("Data Source=db.sqlite"))
             using (var adapter = new SQLiteDataAdapter(query, connection))
             {
@@ -55,6 +56,32 @@ namespace DataGridComboboxDemo
                 adapter.Update(table);
             }
 
+        }
+
+        private void dataGridView1_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (e.Control.GetType() == typeof(DataGridViewComboBoxEditingControl))
+            {
+                DataGridViewComboBoxEditingControl combo = e.Control as DataGridViewComboBoxEditingControl;
+                combo.DropDownStyle = ComboBoxStyle.DropDown;
+                combo.TextChanged += new EventHandler(combo_TextChanged);
+            }
+        }
+
+        public void combo_TextChanged(object sender, EventArgs e)
+        {
+            this.dataGridView1.NotifyCurrentCellDirty(true);
+        }
+
+        void dataTable_ColumnChanging(object sender, DataColumnChangeEventArgs e)
+        {
+            if (e.Column == table.Columns["Name"])
+            {
+                if (e.ProposedValue == null)
+                {
+                    e.ProposedValue = DBNull.Value;
+                }
+            }
         }
     }
 }
