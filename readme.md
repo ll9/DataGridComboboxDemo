@@ -1,6 +1,6 @@
 This repo shows how to use a combobox column in a databound datatable.
 
-
+![img](./resources/datagrid.PNG)
 
 ## How To
 
