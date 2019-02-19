@@ -32,10 +32,16 @@ namespace DataGridComboboxDemo
             dataGridView1.DataSource = table;
             dataGridView1.Columns.Remove("Name");
 
-            var comboboxColum = new DataGridViewComboBoxColumn();
-            comboboxColum.Items.AddRange("Hans", "Peter");
-            comboboxColum.DataPropertyName = "Name";
-            comboboxColum.HeaderText = "Name";
+            var comboboxColum = new DataGridViewComboBoxColumn
+            {
+                Name = "Name",
+                DataPropertyName = "Name",
+                HeaderText = "Name"
+            };
+            foreach (var item in table.Rows.Cast<DataRow>().Select(r => r["Name"]))
+            {
+                comboboxColum.Items.Add(item);
+            }
 
             dataGridView1.Columns.Add(comboboxColum);
         }
