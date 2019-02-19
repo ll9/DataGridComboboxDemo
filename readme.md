@@ -60,3 +60,41 @@ public Form1()
     dataGridView1.Columns.Add(comboboxColum);
 }
 ```
+
+## Editable Dropdown
+
+In order to make the dropdowns editable one has to do the following:
+
+```C#
+dataGridView1.CellValidating += dataGridView1_CellValidating;
+dataGridView1.EditingControlShowing += dataGridView1_EditingControlShowing;
+```
+```C#
+private void dataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+{
+    if (dataGridView1.Columns["Name"] is DataGridViewComboBoxColumn comboBoxColumn)
+    {
+        if (e.ColumnIndex == comboBoxColumn.Index)
+        {
+            if (!comboBoxColumn.Items.Contains(e.FormattedValue))
+            {
+                comboBoxColumn.Items.Add(e.FormattedValue);
+            }
+        }
+    }
+}
+
+private void dataGridView1_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+{
+    if (dataGridView1.Columns["Name"] is DataGridViewComboBoxColumn comboBoxColumn)
+    {
+        if (dataGridView1.CurrentCellAddress.X == comboBoxColumn.Index)
+        {
+            if (e.Control is ComboBox cb)
+            {
+                cb.DropDownStyle = ComboBoxStyle.DropDown;
+            }
+        }
+    }
+}
+```
