@@ -63,6 +63,9 @@ public Form1()
 
 ## Editable Dropdown
 
+![img](./resources/editable_dropdown.PNG)
+
+
 In order to make the dropdowns editable one has to do the following:
 
 ```C#
