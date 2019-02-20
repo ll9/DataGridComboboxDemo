@@ -38,7 +38,12 @@ namespace DataGridComboboxDemo
                 DataPropertyName = "Name",
                 HeaderText = "Name"
             };
-            foreach (var item in table.Rows.Cast<DataRow>().Select(r => r["Name"]))
+            var uniqueItems = new HashSet<object>(
+                table.Rows.Cast<DataRow>()
+                .Select(r => r["Name"])
+                .ToList());
+
+            foreach (var item in uniqueItems)
             {
                 comboboxColum.Items.Add(item);
             }
