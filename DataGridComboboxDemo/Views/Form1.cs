@@ -72,9 +72,10 @@ namespace DataGridComboboxDemo
 
         private void dataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-            if (dataGridView1.Columns["Name"] is DataGridViewComboBoxColumn comboBoxColumn)
+            if (sender is DataGridView dataGridView)
             {
-                if (e.ColumnIndex == comboBoxColumn.Index)
+                var column = dataGridView.Columns[e.ColumnIndex];
+                if (column is DataGridViewComboBoxColumn comboBoxColumn)
                 {
                     if (!comboBoxColumn.Items.Contains(e.FormattedValue))
                     {
@@ -86,15 +87,49 @@ namespace DataGridComboboxDemo
 
         private void dataGridView1_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (dataGridView1.Columns["Name"] is DataGridViewComboBoxColumn comboBoxColumn)
+            if (sender is DataGridView dataGridView)
             {
-                if (dataGridView1.CurrentCellAddress.X == comboBoxColumn.Index)
+                foreach (DataGridViewColumn column in dataGridView.Columns)
                 {
-                    if (e.Control is ComboBox cb)
+                    if (column is DataGridViewComboBoxColumn comboBoxColumn)
                     {
-                        cb.DropDownStyle = ComboBoxStyle.DropDown;
+                        if (e.Control is ComboBox cb)
+                        {
+                            cb.DropDownStyle = ComboBoxStyle.DropDown;
+                        }
                     }
                 }
+            }
+        }
+
+        private void dataGridView1_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (sender is DataGridView dataGridView)
+            {
+                var col = dataGridView.Columns[e.ColumnIndex];
+
+
+
+                dataGridView1.Columns.Remove(col);
+
+                var comboboxColum = new DataGridViewComboBoxColumn
+                {
+                    Name = col.DataPropertyName,
+                    DataPropertyName = col.DataPropertyName,
+                    HeaderText = col.DataPropertyName
+                };
+                var uniqueItems = new HashSet<object>(
+                    table.Rows.Cast<DataRow>()
+                    .Select(r => r[col.DataPropertyName])
+                    .ToList());
+
+                foreach (var item in uniqueItems)
+                {
+                    comboboxColum.Items.Add(item);
+                }
+
+                dataGridView1.Columns.Insert(col.DisplayIndex, comboboxColum);
+
             }
         }
     }
